@@ -1,0 +1,59 @@
+div.graph_editor_container{
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid #aaa;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    overflow: auto;
+    font-family: Trebuchet MS,Tahoma,Verdana,Arial,sans-serif;
+}
+
+div#graph_editor_button_container{
+    position: relative;
+    overflow: auto;
+    width: 100%;
+    border: 1px solid #BEDCE7;
+    background: #EAF2F5;
+    margin-bottom: 10px;
+}
+
+div.graph_editor_button{
+    position: relative;
+    float: left;
+    cursor: pointer;
+    padding: 5px 5px;
+    /*text-shadow: 1px 1px white;*/
+}
+
+
+div.graph_editor_button:hover{
+    text-decoration: underline;
+}
+
+div.graph_editor_button_on{
+    background: #a33;
+}
+
+div.graph_editor_undo_disabled{
+    cursor: default;
+    color: #777;
+}
+
+div.slider{
+    width: 150px;
+}
+
+canvas.graph_editor_canvas{
+    border: 1px solid #aaa;
+    float: left;
+    tabindex: 0;
+}
+
+div#graph_editor_tweaks{
+    overflow: auto;
+    padding: 0px 15px;
+}
+div h4{
+    padding: 0px;
+    margin: 12px 0px 0px 0px;
+}

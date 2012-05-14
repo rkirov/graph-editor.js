@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Simple JS Graph Editor Example Gallery</title>
+    <link type="text/css" href="css/graph-editor.css" rel="Stylesheet" />
+    <script src="build/graph-editor.min.js"></script>
+
+    <link type="text/css" href="lib/jquery-ui/css/ui-lightness/jquery-ui-1.8.20.custom.css" rel="Stylesheet" />
+    <link type="text/css" href="lib/highlight/styles/github.css" rel="Stylesheet" />
+    <script src="lib/highlight/highlight.pack.js"></script>
+    <script src="lib/jquery-ui/js/jquery-1.7.2.min.js"></script>
+    <script src="lib/jquery-ui/js/jquery-ui-1.8.20.custom.min.js"></script>
+
+    <style>
+      body {
+        width: 800px;
+        margin: auto;
+        font-family: Helvetica;
+        background: #fcfcfc;
+      }
+    </style>
+    <script>
+var K4_graph = JSON.stringify(
+               {"vertices": ["0", "1", "2", "3"],
+                "edges": [["0", "1"], ["0", "2"], ["0", "3"], ["1", "2"], ["1", "3"], ["2", "3"]],
+                "name": "G",
+                "pos": {"0": [0.0, 1.0], "1": [-1.0, 0.0], "2": [0.0, -1.0], "3": [1.0, 0.0]}});
+
+var cube = '{"edges": [["000", "001", null], ["000", "010", null], ["000", "100", null], ["001", "011", null], ["001", "101", null], ["010", "011", null], ["010", "110", null], ["011", "111", null], ["100", "101", null], ["100", "110", null], ["101", "111", null], ["110", "111", null]], "vertices": ["000", "001", "010", "011", "100", "101", "110", "111"], "name": "G", "pos": {"010": [0.50000000000000011, 0.8660254037844386], "011": [3.3306690738754696e-16, 1.7320508075688772], "001": [-0.49999999999999978, 0.86602540378443871], "000": [0.0, 0.0], "111": [1.0000000000000002, 1.7320508075688772], "110": [1.5, 0.8660254037844386], "100": [1.0, 0.0], "101": [0.50000000000000022, 0.86602540378443871]}}';
+
+$(function() {
+    hljs.initHighlightingOnLoad();
+    my_graph_editor1 = new GraphEditor('#graph_ed1', {
+        JSONdata : K4_graph
+    });
+    my_graph_editor2 = new GraphEditor('#graph_ed2', {
+        JSONdata : K4_graph,
+        width : 100,
+        height : 100,
+        node_radius : 5,
+        controls : false
+    });
+    /* See comment below. 
+    my_graph_editor3 = new GraphEditor('#graph_ed3', {
+        JSONdata: K4_graph,
+        width : 300,
+        height : 300,
+        directed : true
+    });*/
+    my_graph_editor4 = new GraphEditor('#graph_ed4', {
+        JSONdata: K4_graph,
+        width : 300,
+        height : 300,
+        multigraph : true,
+    });
+
+    my_graph_editor = new GraphEditor('#graph_ed', { JSONdata: cube,
+      width : 500,
+      height : 500,
+      multigraph: true});
+
+    $('#set_json').click(function() {
+        my_graph_editor.import_from_JSON($('#json').val());
+    });
+    $('#get_sage').click(function() {
+        $('#sage').val(my_graph_editor.export_sage);
+    });
+    $('#get_latex').click(function() {
+        $('#latex').val(my_graph_editor.export_tkz);
+    });
+});
+    </script>
+
+</head>
+<body>
+  <h1>JavaScript Graph Editor</h1>
+    We define the following JSON string as global JS variable. The initial positions are optional.
+    <pre>
+      <code class='language-javascript'>
+var K4_graph = JSON.stringify(
+               {"vertices": ["0", "1", "2", "3"],
+                "edges": [["0", "1"], ["0", "2"], ["0", "3"], ["1", "2"], ["1", "3"], ["2", "3"]],
+                "name": "G",
+                "pos": {"0": [0.0, 1.0], "1": [-1.0, 0.0], "2": [0.0, -1.0], "3": [1.0, 0.0]}});
+      </code>
+    </pre>
+    <h2>Simple Multigraph</h2>
+    To instantiate the graph editor add this to your HTML
+    <pre>
+      <code class='html'>
+        &lt;div id="graph_ed1"&gt;&lt;/div&gt;
+      </code>
+    </pre>
+    and on load call the GraphEditor library
+    <pre>
+      <code class='language-javascript'>
+    my_graph_editor1 = new GraphEditor('#graph_ed1', {
+        JSONdata : K4_graph
+    });
+      </code>
+    </pre>
+<div id='graph_ed1'></div>
+<h2>Small Graph, No Controls</h2>
+    <pre>
+      <code class='language-javascript'>
+    my_graph_editor2 = new GraphEditor('#graph_ed2', {
+        JSONdata : K4_graph,
+        width : 100,
+        height : 100,
+        node_radius : 5,
+        controls : false
+    });
+      </code>
+    </pre>
+<div id='graph_ed2'></div>
+<!--
+TODO: fix directed graph implementation to allow for a->b and b->a. Find a good
+way to represent that.
+<h2>Directed Graph</h2>
+    <pre>
+      <code class='language-javascript'>
+    my_graph_editor3 = new GraphEditor('#graph_ed3', {
+        JSONdata: K4_graph,
+        width : 300,
+        height : 300,
+        directed : true
+    });
+      </code>
+    </pre>
+<div id='graph_ed3'></div>-->
+<h2>Multigraph</h2>
+Use '+' when an edge is selected.
+    <pre>
+      <code class='language-javascript'>
+    my_graph_editor4 = new GraphEditor('#graph_ed4', {
+        JSONdata: K4_graph,
+        width : 300,
+        height : 300,
+        multigraph : true
+    });
+      </code>
+    </pre>
+<div id='graph_ed4'></div>
+<h2>Integration with <a href="http://sagemath.org">Sage</a></h2>
+<div id='graph_ed'></div>
+<p id='rest'>
+Use the following <a href="json_data.sage">Sage file</a> in Sage to get JSON string represenation of a graph. Paste it in the box below.<br>
+<input type="button" id="set_json" value="Parse JSON Data"><br>
+<textarea id="json" rows="5" cols="100">
+</textarea><br>
+Using the same <a href="json_data.sage">Sage file</a>, paste this JSON graph data in Sage to obtain a graph.<br>
+<input type="button" id="get_sage" value="Get JSON Data"><br>
+<br>
+<textarea id="sage" rows="5" cols="100">
+</textarea><br>
+Copy/Paste this code to produce this graph in Latex using the tkz-brege package.<br>
+<input type="button" id="get_latex" value="Get Latex Code"><br>
+<textarea id="latex" rows="5" cols="100">
+</textarea></p>
+<a href="https://github.com/you"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+</body>
+</html>
