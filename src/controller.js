@@ -1,6 +1,6 @@
 Controller = function() {
-  var hit_node, selected_object, dragging_node, dragging_frozen_flag, closest,
-      mouse = new Point(), lastcheck = 0;
+    var hit_node, selected_object, dragging_node, dragging_frozen_flag, closest,
+        mouse = new Point(), lastcheck = 0;
     return {
         select_object: function(obj) {
             if (selected_object === obj) {

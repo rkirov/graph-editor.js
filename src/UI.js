@@ -1,32 +1,32 @@
-var UIside_panel_opened;
+// TODO: switch to mustache.js or simpler templatization library instead of
+// this string soup.
+var UIside_panel_opened = false;
 function add_checkbox(name, variable, container_id, onclickf) {
-    var s ='<tr><td>'+name+'</td>';
-    s +='<td><input type="checkbox"'; //+' id="'+name+'_check"'
-    s +=' value="'+variable+'"';
-    if (variable){
-        s+='checked';
-    }
+    var s = '<tr><td>' + name + '</td>';
+    s += '<td><input type="checkbox"';
+    s += ' value="' + variable + '"';
+    if (variable) s += 'checked';
     s += '/></td></tr>';
     $(container_id).append(s);
-    $(container_id+' input:last').click(onclickf);
+    $(container_id + ' input:last').click(onclickf);
 }
 
 function add_button(name, container_id, onclickf) {
-    var s ='<input type="button" id="'+name+'_button" value="'+name+'"';
-s += '/>';
+    var s = '<input type="button" id="' + name + '_button" value="' +
+        name + '"' + '/>';
     $(container_id).append(s);
-    $(container_id+' input:last').click(onclickf);
+    $(container_id + ' input:last').click(onclickf);
 }
 
 function add_slider(name, variable, container_id, min, max, onchangef) {
-    var s = '<tr><td>'+name+'</td>';
+    var s = '<tr><td>' + name + '</td>';
     s += '<td><div class="slider"></div></td></tr>';
     $(container_id).append(s);
-    $(container_id+' div.slider:last').slider({
+    $(container_id + ' div.slider:last').slider({
         min: min,
         max: max,
         value: variable,
-        slide: function (event, ui) {
+        slide: function(event, ui) {
             onchangef(ui.value);
         }
     });
@@ -34,68 +34,82 @@ function add_slider(name, variable, container_id, min, max, onchangef) {
 
 function create_controls(div) {
     //Create controls and attach click functions
-    var tweaks, canvaspos = $(div +' canvas').offset(), buttondiv = div + ' #graph_editor_button_container',
-    canvas = $(div +' canvas')[0];
+    var canvaspos = $(div + ' canvas').offset(),
+        buttondiv = div + ' #graph_editor_button_container',
+    canvas = $(div + ' canvas')[0];
     $(div).prepend('<div id="graph_editor_button_container"></div>');
-    $('<div id="live_button" class="graph_editor_button">live</div>').appendTo(buttondiv).click(toggle_live);
-    $('<div id="tweaks_button" class="graph_editor_button">tweaks</div>').appendTo(buttondiv)
-    .toggle(function() {
-        $(div).animate({'width': SIZE.x + 310 + 'px'},
-            {queue: true, duration: 'fast', easing: 'linear', complete: function (){
-                $(div + ' #graph_editor_tweaks').slideToggle('fast');
-                UIside_panel_opened = true;
+    $('<div id="live_button" class="graph_editor_button">live</div>')
+        .appendTo(buttondiv).click(toggle_live);
+    $('<div id="tweaks_button" class="graph_editor_button">tweaks</div>')
+        .appendTo(buttondiv)
+        .toggle(function() {
+            $(div).animate(
+                {'width': SIZE.x + 310 + 'px'},
+                {
+                    queue: true,
+                    duration: 'fast',
+                    easing: 'linear',
+                    complete: function() {
+                        $(div + ' #graph_editor_tweaks').slideToggle('fast');
+                        UIside_panel_opened = true;
+                    }
+            });
+            $(div + ' #tweaks_button').toggleClass('graph_editor_button_on');
+        },
+        function() {
+            $(div + ' #graph_editor_tweaks').slideToggle(
+                'fast', function (){
+                    $(div).animate(
+                        {'width': SIZE.x +'px'},
+                        {queue: true, duration: 'fast', easing: 'linear'});
+                    UIside_panel_opened = false;
+                });
+            $(div + ' #tweaks_button').toggleClass('graph_editor_button_on');
+    });
+
+    $('<div id="help_button" class="graph_editor_button">?</div>')
+        .appendTo(buttondiv)
+        .click(function() {
+            $('#help_dialog').dialog('open');
+        });
+
+    $('<div id="undo_button" class="graph_editor_button">undo</div>')
+        .appendTo(buttondiv)
+        .click(undo_remove).toggleClass('graph_editor_undo_disabled');
+
+    $('<div id="reset_button" class="graph_editor_button">reset</div>')
+        .appendTo(buttondiv)
+        .click(function() {
+            if (confirm("The graph will be irreversibly erased. This operation cannot be undone.")) {
+                erase_graph();
             }
         });
-        $(div+' #tweaks_button').toggleClass('graph_editor_button_on');
-    },
-    function() {
-        $(div + ' #graph_editor_tweaks').slideToggle('fast', function (){
-            $(div).animate({'width': SIZE.x +'px'},
-            {queue: true, duration: 'fast', easing: 'linear'});
-            UIside_panel_opened = undefined;
+
+    $('<div id="image_button" class="graph_editor_button">image</div>')
+        .appendTo(buttondiv)
+        .click(function() {
+            var img = canvas.toDataURL("image/png");
+            window.open(img, "Graph Editor Image",
+                "menubar=false,toolba=false,location=false,width=" + SIZE.x +
+                ",height=" + SIZE.y);
         });
-        $(div+' #tweaks_button').toggleClass('graph_editor_button_on');
-    });
-
-    $('<div id="help_button" class="graph_editor_button">?</div>').appendTo(buttondiv)
-    .click(function() {
-        $('#help_dialog').dialog('open');
-    });
-
-    $('<div id="undo_button" class="graph_editor_button">undo</div>').appendTo(buttondiv)
-    .click(undo_remove).toggleClass('graph_editor_undo_disabled');
-
-    $('<div id="reset_button" class="graph_editor_button">reset</div>').appendTo(buttondiv)
-    .click(function() {
-        if (confirm("The graph will be irreversibly erased. This operation cannot be undone.")) {
-            erase_graph();
-        }
-    });
-
-    $('<div id="image_button" class="graph_editor_button">image</div>').appendTo(buttondiv)
-    .click(function() {
-        var img = canvas.toDataURL("image/png");
-        window.open(img, "Graph Editor Image"
-        ,"menubar=false,toolba=false,location=false,width="
-        + SIZE.x + ",height=" + SIZE.y);
-    });
 
     $(div).append('<div id="graph_editor_tweaks"></div>');
-    tweaks = div+' #graph_editor_tweaks';
+    var tweaks = div + ' #graph_editor_tweaks';
 
-    $(tweaks).append("<div class='infobox'><h4 id='title'>Info</h4>\
-    <div id='info'>Index: <span id='index'></span><br>\
-    <span id='pos'>Position: (<span id='posx'></span>, <span id='posy'></span>)<br></span>\
-    <span id='vert'>Vertices: <span id='v1'></span>-><span id='v2'></span><br></span>\
-    Label: <input type='text' id='label'></div>\
-    <div id='none_selected'>No node is selected</div></div>");
+    $(tweaks).append("<div class='infobox'><h4 id='title'>Info</h4>" +
+        "<div id='info'>Index: <span id='index'></span><br>" +
+        "<span id='pos'>Position: (<span id='posx'></span>, <span id='posy'></span>)<br></span>" +
+        "<span id='vert'>Vertices: <span id='v1'></span>-><span id='v2'></span><br></span>" +
+        "Label: <input type='text' id='label'></div>" +
+        "<div id='none_selected'>No node is selected</div></div>");
     $(div + ' .infobox #info').hide();
     $(div + ' .infobox #label').keyup(function() {
         var index = $(div + ' .infobox #index').html(),
-        title = $(div + ' .infobox #title').html();
-        if (title === "Vertex Info"){
+            title = $(div + ' .infobox #title').html();
+        if (title === "Vertex Info") {
             nodes[index].label = $(div + ' .infobox #label').val();
-        } else if (title === "Edge Info"){
+        } else if (title === "Edge Info") {
             edge_list[index].label = $(div + ' .infobox #label').val();
         }
     });
@@ -109,21 +123,21 @@ function create_controls(div) {
 
     $(tweaks).append('<table>');
     add_checkbox('Vertex numbers', NODE_NUMBERS, tweaks, function() {
-                NODE_NUMBERS = !NODE_NUMBERS;
-                draw();
-                });
+        NODE_NUMBERS = !NODE_NUMBERS;
+        draw();
+    });
 
     add_slider('Vertex Size', NODE_RADIUS, tweaks, 0, 30, function(newval) {
         NODE_RADIUS = newval;
         draw();
-        });
+    });
 
     add_slider('Edge Strength', 50, tweaks, 0, 100, function(newval) {
         SPRING = (1 - 1e-2) + 1e-4 * (100 - newval);
         SPEED = newval / 50.0;
         SPEED *= 2 * SPEED;
     });
-    add_slider('Edge Length', FIXED_LENGTH, tweaks, 0, 200, function (newval){
+    add_slider('Edge Length', FIXED_LENGTH, tweaks, 0, 200, function (newval) {
         FIXED_LENGTH = newval;
     });
 
@@ -163,8 +177,6 @@ function update_infobox(obj) {
         $(div + ' .infobox #index').html(index);
         $(div + ' .infobox #pos').hide();
         $(div + ' .infobox #vert').show();
-        //$(div + ' .infobox #v1').html(nodes.indexOf(enodes.node1));
-        //$(div + ' .infobox #v2').html(nodes.indexOf(enodes.node2));
         $(div + ' .infobox #v1').html(enodes.node1.label);
         $(div + ' .infobox #v2').html(enodes.node2.label);
         $(div + ' .infobox #label').val(edge.label||"none");

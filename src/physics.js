@@ -22,8 +22,8 @@ function repulsive_force(sqr_d, k) {
 }
 
 function border_repulse(node) {
-    var p = node.get_pos(), d = (Math.min(p.x,p.y,SIZE.x-p.x,SIZE.y-p.y)), v;
-    v = scalarm(20/(d*d), vectorsub(center, p));
+    var v, p = node.get_pos(), d = (Math.min(p.x, p.y, SIZE.x-p.x, SIZE.y-p.y));
+    v = scalarm(20 / (d * d), vectorsub(center, p));
     node.change_vel(v.x, v.y);
 }
 
