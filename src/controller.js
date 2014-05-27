@@ -42,7 +42,7 @@ Controller = function() {
             }
         },
         drag_node_stop: function() {
-            if (dragging_frozen_flag === false ) {
+            if (dragging_frozen_flag === false && dragging_node) {
                 dragging_node.toggle_freeze();
             }
             dragging_node = undefined;
