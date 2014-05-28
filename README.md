@@ -38,3 +38,14 @@ libraries. The main differentatior for graph-editor.js is the focus on editing
 graphs vs displaing them.
 
 Have fun!
+
+PROPOSED LICENSE CHANGE
+-----------------------
+The project is currently released under GPLv2 license. I want to change the
+license to MIT (http://choosealicense.com/licenses/mit/) as it is much more
+suitable for a frontend JS project (see for example jQuery or AngularJS.)
+
+If after 14 days (June 10th 2014) I get no email objecting to this I will
+consider all of the current graph-editor.js code OK for relicensing and will
+proceed with the change.
+
